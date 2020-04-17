@@ -1,4 +1,4 @@
-# Computer Networls Assignment 3
+## Computer Networls Assignment 3
 This assignment asks for an application layer to be built using UDP sockets with reliability built into them.
 A simple chat application is made which is run on a local machine.
 Two programs run: 
