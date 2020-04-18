@@ -11,6 +11,7 @@ while choice != 0:
     choice = input("\n Do you want to encrypt or decrypt a message?\n1 to encrypt,2 to decrypt and 0 to exit. ")
     if str(choice) == '1':
         message = input("Enter message-> ")
+        # print(type(message))
         r_seed = input("Enter seed for random number-> ")
         random.seed(r_seed)
         shuffled_list = [chr(x) for x in range(32,127)]
