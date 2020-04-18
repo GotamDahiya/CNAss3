@@ -36,7 +36,8 @@ if __name__ == '__main__':
 	localIP = "127.0.0.2"
 	localPort = 8080
 
-	r_seed=input("Enter number for seed function-> ")
+	print("Client and server should have the same seed number(Public key)")
+	r_seed=input("Enter number for seed function(Public key)-> ")
 
 	clientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 	# clientSocket.bind((localIP,localPort))
