@@ -35,7 +35,8 @@ if __name__ == '__main__':
     localPort = 8989
     buffersize = 1024
 
-    r_seed = input("Enter number for seed function-> ")
+    print("Server and client should have same seed number(Public Key)")
+    r_seed = input("Enter number for seed function(Public key)-> ")
 
     serverSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
