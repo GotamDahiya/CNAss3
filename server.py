@@ -2,33 +2,9 @@ import socket
 import io
 import random
 import sys
+import struct
+import encrpytion
 
-def encrypt(msg,r_seed):
-	result = ''
-	char_in_order = [chr(x) for x in range(0,127)]
-
-	random.seed(r_seed)
-	shuffled_list = [chr(x) for x in range(0,127)]
-	random.shuffle(shuffled_list)
-
-	for i in range(0, len(msg)):
-		result += shuffled_list[char_in_order.index(msg[i])]
-
-	return result
-
-def decrypt(msg,r_seed):
-	result=''
-	char_in_order = [chr(x) for x in range(0,127)]
-
-	random.seed(r_seed)
-	shuffled_list = [chr(x) for x in range(0,127)]
-	random.shuffle(shuffled_list)
-
-	for i in range(0, len(msg)):
-		result += char_in_order[shuffled_list.index(msg[i])]
-
-    result+='\n'
-	return result
 
 if __name__ == '__main__':
     localIP = "127.0.0.1"
@@ -45,16 +21,15 @@ if __name__ == '__main__':
     print("UDP server up and listening")
 
     while True:
-        bytesAddrPair = serverSocket.recvfrom(buffersize)
-        msgFromClient = bytesAddrPair[0]
-        address = bytesAddrPair[1]
-        msgFromClient = msgFromClient.decode()
+        bytesFromClient = serverSocket.recvfrom(buffersize)
+        msgFromClient = bytesFromClient[0].decode()
+        address = bytesFromClient[1]
         msgFromClient = decrypt(msgFromClient,r_seed)
-        clientMsg = "Message from Client:{}".format(msgFromClient)
-        clientIP = "Client IP:{}".format(address)
-
-        print(clientMsg)
+        clientIP = "Client IP:\n{}".format(address)
+        clientMsg = "Message from Client:\n{}".format(msgFromClient)
+        
         print(clientIP)
+        print(clientMsg)
 
         msgFromServer = input("Enter a message-> ")
         msgFromServer = encrypt(msgFromServer,r_seed)
