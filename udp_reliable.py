@@ -28,7 +28,7 @@ def checksum_receiver(data, checksum):
 
 def parse(packet):
     packet = {}
-    packet['src_port'],packet['dst_port'],packet['seq'],packet['ack'],packet['wsize'],packet['checksum'] = struct.unpack('!HHIIHH', packet)
+    packet['src_port'],packet['dst_port'],packet['seq'],packet['ack'],packet['wsize'],packet['proto'],packet['checksum'] = struct.unpack('!HHIIHHH', packet)
     return packet
     pass
     
@@ -49,13 +49,14 @@ class UDPPacket:
     
     def build(self):
         packet = struct.pack(
-            '!HHIIHH', # Size H->2, I->4
+            '!HHIIHHH', # Size H->2, I->4
             self.src_port, # Sorce port number        0
             self.dst_port, # Destination port number  2 
             0,             # Sequence number          4 
             0,             # Acknoledgement number    8 
             8192,          # Window Size              12
-            0,             # Initial Checksum value   14
+            17,            # Protocol -> UDP datagram 14
+            0              # Initial Checksum value   16
         )
         p1 = packet+data # Initializing packet along with data for checksum
         pseudo = struct.pack(
@@ -70,4 +71,17 @@ class UDPPacket:
         packet = packet[:16] + struct.pack('H',checksum) + self.data # Final packet to be transmitted
         
         return packet
+        pass
+    
+class Seq_ACK:
+    def __init__(self, seq, ack):
+        self.seq = seq
+        self.ack = ack
+        
+    def update_seq(self):
+        
+        pass
+    
+    def update_ack(self):
+        
         pass
