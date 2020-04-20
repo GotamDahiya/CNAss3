@@ -1,33 +1,10 @@
 import socket
 import random
 import sys
+import encryption
+import struct
+import io
 
-def encrypt(msg,r_seed):
-	result = ''
-	char_in_order = [chr(x) for x in range(0,127)]
-
-	random.seed(r_seed)
-	shuffled_list = [chr(x) for x in range(0,127)]
-	random.shuffle(shuffled_list)
-
-	for i in range(0, len(msg)):
-		result += shuffled_list[char_in_order.index(msg[i])]
-
-	return result
-
-def decrypt(msg,r_seed):
-	result=''
-	char_in_order = [chr(x) for x in range(0,127)]
-
-	random.seed(r_seed)
-	shuffled_list = [chr(x) for x in range(0,127)]
-	random.shuffle(shuffled_list)
-
-	for i in range(0, len(msg)):
-		result += char_in_order[shuffled_list.index(msg[i])]
-
-	result += '\n'
-	return result
 
 if __name__ == '__main__':
 	severAddrPort = ("127.0.0.1",8989)
@@ -53,6 +30,6 @@ if __name__ == '__main__':
 		msgFromServer = clientSocket.recvfrom(bufferSize)
 		msgFromServer = msgFromServer[0].decode()
 		msgFromServer = decrypt(msgFromServer,r_seed)
-		msg = "Message from server {}".format(msgFromServer)
+		msg = "Message from server:\n{}".format(msgFromServer)
 
 		print(msg)
