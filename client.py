@@ -1,9 +1,10 @@
 import socket
+import io
 import random
 import sys
-import encryption
 import struct
-import io
+from encryption import *
+from udp_reliable import *
 
 
 if __name__ == '__main__':
@@ -22,14 +23,14 @@ if __name__ == '__main__':
 	while True:
 		
 		msgFromClient = input("Enter a message-> ")
-		msgFromClient = encrypt(msgFromClient,r_seed)
+		msgFromClient = Encryption(msgFromClient,r_seed).encrypt()
 		bytesToSend = msgFromClient.encode()
 		
 		clientSocket.sendto(bytesToSend, severAddrPort)
-
+  
 		msgFromServer = clientSocket.recvfrom(bufferSize)
 		msgFromServer = msgFromServer[0].decode()
-		msgFromServer = decrypt(msgFromServer,r_seed)
-		msg = "Message from server:\n{}".format(msgFromServer)
+		msgFromServer = Encryption(msgFromServer,r_seed).decrypt()
+		msg = "\nMessage from server:\n{}".format(msgFromServer)
 
 		print(msg)
