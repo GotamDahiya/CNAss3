@@ -2,7 +2,7 @@ import array
 import struct
 import socket
 
-def checksum_sender(packet):
+def checksum_sender(packet): # Creating a checksum for the data
     if len(packet) % 2 != 0:
         packet += b'\0'
     
@@ -13,7 +13,7 @@ def checksum_sender(packet):
     return res    
     pass
 
-def checksum_receiver(data, checksum):
+def checksum_receiver(data, checksum): # Verifying if the checksum is correct or not
     data_len = len(data)
     if(data_len %2) != 0:
         data += b'\0'
@@ -26,7 +26,7 @@ def checksum_receiver(data, checksum):
     check = res+checksum
     return check
 
-def parse(datagram):
+def parse(datagram): # Splitting the datagram into it's constituent parts
     packet = {}
     packet['src_port'],packet['dst_port'],packet['seq'],packet['ack'],packet['wsize'],packet['proto'],packet['checksum'] = struct.unpack('!HHIIHHH', datagram[:18])
     packet['data'] = struct.unpack('!%ds'%(len(datagram)-18,),datagram[18:])
@@ -34,7 +34,7 @@ def parse(datagram):
     pass
 
 
-class UDPPacket:
+class UDPPacket:  # Creation of a UDP packet to be sent
     def __init__(self,
                 src_host: str,
                 dst_host: str,
@@ -74,7 +74,7 @@ class UDPPacket:
         return packet
         pass
     
-class Seq_ACK:
+class Seq_ACK: # updation of sequence and acknoledgement numbers
     def __init__(self, seq, ack):
         self.seq = seq
         self.ack = ack
