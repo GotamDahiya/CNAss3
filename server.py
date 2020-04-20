@@ -21,18 +21,25 @@ if __name__ == '__main__':
     print("UDP server up and listening")
 
     while True:
-        bytesFromClient = serverSocket.recvfrom(buffersize)
-        msgFromClient = bytesFromClient[0].decode()
-        address = bytesFromClient[1]
-        msgFromClient = Encryption(msgFromClient,r_seed).decrypt()
-        clientIP = "Client IP:\n{}".format(address)
-        clientMsg = "Message from Client:\n{}".format(msgFromClient)
-        
-        print('\n'+clientIP)
-        print(clientMsg)
-
+        datagram,ip_addr = serverSocket.recvfrom(buffersize)
+        # print(ip_addr)
+        packet = parse(datagram)
+        # print(packet)
+        if(checksum_receiver(datagram, packet['checksum'])):
+            
+            msgFromClient, = packet['data']
+            msgFromClient = msgFromClient.decode()
+            msgFromClient = Encryption(msgFromClient, r_seed).decrypt()
+            print("Clients ip address:")
+            print(ip_addr)
+            print("Message from client:")
+            print(msgFromClient)
+        else:
+            print("Error! Packet Discarded")
+            
+            
         msgFromServer = input("Enter a message-> ")
         msgFromServer = Encryption(msgFromServer,r_seed).encrypt()
-        bytesToSend = msgFromServer.encode()
-
-        serverSocket.sendto(bytesToSend, address)
+        data = msgFromServer.encode()
+        bytesToSend = UDPPacket(localIP,ip_addr[0],localPort,ip_addr[1],data).build()
+        serverSocket.sendto(bytesToSend,ip_addr)
