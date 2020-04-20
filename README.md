@@ -2,11 +2,21 @@
 
 This assignment asks for an application layer to be built using UDP sockets with reliabilty built into them.
 
-A simple chat application program is run the local machine.
+A simple chat application program is run the local machine by implementing UDP sockets as the middle layer with custom built packets providing reliabilty to the network layer.
 
-## Main aspects
+## Main Aspects
 
-This project contains two main programs, one for the server and another for the client.
+This project contains 4 files, namely:- *server*,*client*,*udp_reilabe* and *encryption*.
+
+*Server* -> This file creates a server for messages to be received from a client.
+
+*Client* -> This file allows a user to create a message and send it to the server.
+
+Both the client and server pass messages between each other similar to an ELIZA program. The messages are stored in packets and transmitted via UDP sockets implemented in both the programs.
+
+*udp_reliable* -> This file creates a packet containing the source IPv4 address, port, destination IPv4 address, port, sequences number, acknoledgement number, window size,checksum value and data to be transmitted. For error checking "checksum" function is used. Sequence and acknlodgement numbers are updated with a protocol similar to TCP. Currently, for a bad packet received the receiver asks the sender to retransmit the packet with the corresponding sequence and acknoledgement numbers.
+
+*Encryption* -> This file encrypts and decrypts the messages passed between the server and client and vice-versa. A seed number has to be given by both the server and client which have to be the same otherwise the encryption and decryption will not be the same on either side. This seed number is like a public key shared between 2 users.
 
 ## Getting Started
 
@@ -25,7 +35,7 @@ First git clone the repository on local machine
 ## Deployment
 
 * **Navigate to the cloned repository**
-* **run both the server and client script in seperate terminals/command prompts**
+* **run both the server file first and then the client script in seperate terminals/command prompts**
 * **Send a message from client to server to initiate communication**
 * **Send messages back and forth between both the programs**
 
@@ -38,7 +48,7 @@ For references: [How to make proper Pull requests from a fork](https://help.gith
 ## Authors
 
 * **Gotam Dahiya 2017A7PS0223H**
-* **Hariharan R 20xxA7xxyyyyH**
-* **Srikruthi 20xxA7xxyyyyH**
-* **SriCharan 20xxA7xxyyyyH**
-* **Arun Parimi 20xxA7xxyyyyH**
+* **Hariharan R 2017A7PS0065H**
+* **Srikruthi 2017A7PS0086H**
+* **SriCharan 2017A7PSyyyyH**
+* **Arun Parimi 2017A7PS0221H**
