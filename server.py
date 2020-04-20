@@ -3,8 +3,8 @@ import io
 import random
 import sys
 import struct
-import encrpytion
-
+from encryption import *
+from udp_reliable import *
 
 if __name__ == '__main__':
     localIP = "127.0.0.1"
@@ -24,15 +24,15 @@ if __name__ == '__main__':
         bytesFromClient = serverSocket.recvfrom(buffersize)
         msgFromClient = bytesFromClient[0].decode()
         address = bytesFromClient[1]
-        msgFromClient = decrypt(msgFromClient,r_seed)
+        msgFromClient = Encryption(msgFromClient,r_seed).decrypt()
         clientIP = "Client IP:\n{}".format(address)
         clientMsg = "Message from Client:\n{}".format(msgFromClient)
         
-        print(clientIP)
+        print('\n'+clientIP)
         print(clientMsg)
 
         msgFromServer = input("Enter a message-> ")
-        msgFromServer = encrypt(msgFromServer,r_seed)
+        msgFromServer = Encryption(msgFromServer,r_seed).encrypt()
         bytesToSend = msgFromServer.encode()
 
         serverSocket.sendto(bytesToSend, address)
