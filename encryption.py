@@ -2,7 +2,8 @@ import random
 import sys
 import io
 
-class Encryptio:
+
+class Encryption:
     def __init__(self,
                  msg:    str,
                  r_seed: int):
@@ -15,8 +16,8 @@ class Encryptio:
         random.seed(self.r_seed)
         shuffled_list = [chr(x) for x in range(0,127)]
         
-        for i in range(0,len(msg)):
-            result += shuffled_list[self.char_in_order.index(msg[i])]
+        for i in range(0,len(self.msg)):
+            result += shuffled_list[self.char_in_order.index(self.msg[i])]
             pass
         
         return result
@@ -26,8 +27,8 @@ class Encryptio:
         random.seed(self.r_seed)
         shuffeld_list = [chr(x) for x in range(0,127)]
         
-        for i in range(0,len(msg)):
-            result += self.char_in_order[shuffeld_list.index(msg[i])]
+        for i in range(0,len(self.msg)):
+            result += self.char_in_order[shuffeld_list.index(self.msg[i])]
             pass
         
         result += '\n'
