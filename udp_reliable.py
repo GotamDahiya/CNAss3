@@ -26,12 +26,13 @@ def checksum_receiver(data, checksum):
     check = res+checksum
     return check
 
-def parse(packet):
+def parse(datagram):
     packet = {}
-    packet['src_port'],packet['dst_port'],packet['seq'],packet['ack'],packet['wsize'],packet['proto'],packet['checksum'] = struct.unpack('!HHIIHHH', packet)
+    packet['src_port'],packet['dst_port'],packet['seq'],packet['ack'],packet['wsize'],packet['proto'],packet['checksum'] = struct.unpack('!HHIIHHH', datagram[:18])
+    packet['data'] = struct.unpack('!%ds'%(len(datagram)-18,),datagram[18:])
     return packet
     pass
-    
+
 
 class UDPPacket:
     def __init__(self,
