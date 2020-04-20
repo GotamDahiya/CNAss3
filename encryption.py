@@ -11,7 +11,7 @@ class Encryption:
         self.r_seed = r_seed
         self.char_in_order = [chr(x) for x in range(0,127)]
         
-    def encrypt(self):
+    def encrypt(self):  # Encryptin the message to be sent
         result = ''
         random.seed(self.r_seed)
         shuffled_list = [chr(x) for x in range(0,127)]
@@ -22,7 +22,7 @@ class Encryption:
         
         return result
     
-    def decrypt(self):
+    def decrypt(self):  # Decrypting the received message
         result=''
         random.seed(self.r_seed)
         shuffeld_list = [chr(x) for x in range(0,127)]
