@@ -14,7 +14,7 @@ This project contains 4 files, namely:- *server*,*client*,*udp_reilabe* and *enc
 
 Both the client and server pass messages between each other similar to an ELIZA program. The messages are stored in packets and transmitted via UDP sockets implemented in both the programs.
 
-*udp_reliable* -> This file creates a packet containing the source IPv4 address, port, destination IPv4 address, port, sequences number, acknoledgement number, window size,checksum value and data to be transmitted. For error checking "checksum" function is used. Sequence and acknlodgement numbers are updated with a protocol similar to TCP. Currently, for a bad packet received the receiver asks the sender to retransmit the packet with the corresponding sequence and acknoledgement numbers.
+*udp_reliable* -> This file creates a packet containing the source IPv4 address, port, destination IPv4 address, port, sequences number, acknoledgement number, window size,checksum value and data to be transmitted. For error checking "checksum" function is used. Sequence and acknlodgement numbers are updated with a protocol similar to *TCP*. The sequence and acknoledgement numbers are updated at the server and client side respectively. Currently, for a bad packet received the receiver asks the sender to retransmit the packet with the corresponding sequence and acknoledgement numbers.
 
 *Encryption* -> This file encrypts and decrypts the messages passed between the server and client and vice-versa. A seed number has to be given by both the server and client which have to be the same otherwise the encryption and decryption will not be the same on either side. This seed number is like a public key shared between 2 users.
 
