@@ -1,3 +1,9 @@
+''' 
+This file is used for creating the server side of the toy application. It receives a message from the client and the user can send a message back to the client. Currently the communication is done via terminal/command prompt.
+IPv4 Address -> 127.0.0.1
+Port -> 8989
+'''
+
 import socket
 import io
 import random
@@ -14,10 +20,12 @@ if __name__ == '__main__':
     print("Server and client should have same seed number(Public Key)")
     r_seed = input("Enter number for seed function(Public key)-> ")
 
+    # Creating server side UDP socket
     serverSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-
     serverSocket.bind((localIP,localPort))
-
+    
+    seq, ack = 0, 0
+    
     print("UDP server up and listening")
 
     while True:
@@ -26,7 +34,7 @@ if __name__ == '__main__':
         packet = parse(datagram)
         # print(packet)
         datagram1 = datagram[:22] + datagram[24:]
-        if(checksum_receiver(datagram1, packet['checksum'])):
+        if(checksum_receiver(datagram1, packet['checksum']) and check_SeqAck(packet['seq'],packet['ack'])):
             
             msgFromClient, = packet['data']
             msgFromClient = msgFromClient.decode()
@@ -35,6 +43,8 @@ if __name__ == '__main__':
             print(ip_addr)
             print("Message from client:")
             print(msgFromClient)
+            seq += 1
+            ack = packet['ack']
         else:
             print("Error! Packet Discarded")
             
@@ -42,5 +52,7 @@ if __name__ == '__main__':
         msgFromServer = input("Enter a message-> ")
         msgFromServer = Encryption(msgFromServer,r_seed).encrypt()
         data = msgFromServer.encode()
-        bytesToSend = UDPPacket(localIP,ip_addr[0],localPort,ip_addr[1],data).build()
+        bytesToSend = UDPPacket(localIP,ip_addr[0],localPort,ip_addr[1],seq,ack,data).build()
         serverSocket.sendto(bytesToSend,ip_addr)
+
+        update_check()
