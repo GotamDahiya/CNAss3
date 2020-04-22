@@ -21,17 +21,20 @@ if __name__ == '__main__':
 	clientSocket.bind((localIP,localPort))
 
 	while True:
+		
 		msgFromClient = input("Enter a message-> ")
 		msgFromClient = Encryption(msgFromClient,r_seed).encrypt()
 		data = msgFromClient.encode()
 		bytesToSend = UDPPacket(localIP,serverAddrPort[0],localPort,serverAddrPort[1],data).build()
 		clientSocket.sendto(bytesToSend, serverAddrPort)
 
-	
+
 		datagram,ip_addr = clientSocket.recvfrom(bufferSize)
 		packet = parse(datagram)
 		# print(packet)
-		if(checksum_receiver(datagram, packet['checksum'])):
+		datagram1 = datagram[:22] + datagram[24:]
+		if(checksum_receiver(datagram1, packet['checksum'])):
+			
 			msgFromServer, = packet['data']
 			msgFromServer = msgFromServer.decode()
 			msgFromServer = Encryption(msgFromServer,r_seed).decrypt()
