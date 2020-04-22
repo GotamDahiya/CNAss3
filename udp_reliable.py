@@ -1,6 +1,12 @@
+'''
+This file creates the raw packets to be transmitted via the UDP connection. It includes a checksum generator and verifier, packet builder. A method for updating sequence and acknoledgement numbers is also included in this file. A check function for the SEQ and ACK numbers is also included.
+'''
+
 import array
 import struct
 import socket
+
+check = 0
 
 def checksum_func(packet): # Creating a checksum for the data
     checksum = 0
@@ -42,18 +48,40 @@ def parse(datagram): # Splitting the datagram into it's constituent parts
     pass
 
 
+def check_SeqAck(seq: int,
+                 ack: int): # Checking if the sequence and acknoledgement numbers are in sequence
+    global check
+    print(seq, end=' ')
+    print(ack, end=' ')
+    print(check)
+    if (seq+ack)==(check):
+        return 1
+    else:
+        return 0
+    pass
+
+def update_check():
+    print("A")
+    global check
+    check += 1
+    print(check)
+
 class UDPPacket:  # Creation of a UDP packet to be sent
     def __init__(self,
                 src_host: str,
                 dst_host: str,
                 src_port: int,
                 dst_port: int,
+                seq:      int,
+                ack:      int,
                 data:     bytes):
         self.src_host = src_host # Source ip address
         self.dst_host = dst_host # Destination ip address
         self.src_port = src_port # Source port number
         self.dst_port = dst_port # Destination port number
         self.data     = data     # Data to be transmitted
+        self.seq      = seq      # Sequence number of packet being transmitted
+        self.ack      = ack      # Acknoledgement number of packet being transmitted
         pass
     
     def build(self):
@@ -63,8 +91,8 @@ class UDPPacket:  # Creation of a UDP packet to be sent
             self.dst_port,                    # Destination port number   2
             socket.inet_aton(self.src_host),  # Source IPv4 address       4
             socket.inet_aton(self.dst_host),  #  Destination IPv4 address 8
-            0,                                # Sequence number           12 
-            0,                                # Acknoledgement number     16 
+            self.seq,                         # Sequence number           12 
+            self.ack,                         # Acknoledgement number     16 
             8192,                             # Window Size               20
             0                                 # Initial Checksum value    22
         )
