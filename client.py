@@ -1,3 +1,9 @@
+'''
+This file is used for creating the client side of the toy application. It sends a message to the server to establish a line of communication. The communication is done via terminal/command prompt.
+IPv4 address -> 127.0.0.2
+Port -> 8080
+'''
+
 import socket
 import io
 import random
@@ -17,23 +23,27 @@ if __name__ == '__main__':
 	print("Client and server should have the same seed number(Public key)")
 	r_seed=input("Enter number for seed function(Public key)-> ")
 
+	# Creating server side UDP socket
 	clientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-	clientSocket.bind((localIP,localPort))
+	clientSocket.bind((localIP,localPort)) # Binding this address to the socket whenever this program is run.
+ 
+	seq, ack, = 0, 0
 
 	while True:
 		
 		msgFromClient = input("Enter a message-> ")
 		msgFromClient = Encryption(msgFromClient,r_seed).encrypt()
 		data = msgFromClient.encode()
-		bytesToSend = UDPPacket(localIP,serverAddrPort[0],localPort,serverAddrPort[1],data).build()
+		bytesToSend = UDPPacket(localIP,serverAddrPort[0],localPort,serverAddrPort[1],seq,ack,data).build()
 		clientSocket.sendto(bytesToSend, serverAddrPort)
-
-
+  
+		update_check()
+		
 		datagram,ip_addr = clientSocket.recvfrom(bufferSize)
 		packet = parse(datagram)
 		# print(packet)
 		datagram1 = datagram[:22] + datagram[24:]
-		if(checksum_receiver(datagram1, packet['checksum'])):
+		if(checksum_receiver(datagram1, packet['checksum']) and check_SeqAck(packet['seq'],packet['ack'])):
 			
 			msgFromServer, = packet['data']
 			msgFromServer = msgFromServer.decode()
@@ -42,5 +52,7 @@ if __name__ == '__main__':
 			print(msgFromServer)
 			print("Server's IP address:")
 			print(ip_addr)
+			ack += 1
+			seq = packet['seq']
 		else:
 			print("Error! Package discarded")
