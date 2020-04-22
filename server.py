@@ -21,11 +21,12 @@ if __name__ == '__main__':
     print("UDP server up and listening")
 
     while True:
+        
         datagram,ip_addr = serverSocket.recvfrom(buffersize)
-        # print(ip_addr)
         packet = parse(datagram)
         # print(packet)
-        if(checksum_receiver(datagram, packet['checksum'])):
+        datagram1 = datagram[:22] + datagram[24:]
+        if(checksum_receiver(datagram1, packet['checksum'])):
             
             msgFromClient, = packet['data']
             msgFromClient = msgFromClient.decode()
