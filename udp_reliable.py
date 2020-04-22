@@ -3,28 +3,41 @@ import struct
 import socket
 
 def checksum_func(packet): # Creating a checksum for the data
-    if len(packet) % 2 != 0:
+    checksum = 0
+    data_len = len(packet)
+    if(data_len % 2) != 0:
+        data_len += 1
         packet += b'\0'
+        
+    for i in range(0,data_len,2):
+        w = (packet[i] << 8) + (packet[i+1])
+        checksum += w
     
-    res = sum(array.array("H",packet))
-    res = (res >>16)+(res&0xFFF)
-    res += res >>16
-    res = (~res)&0xFFF
-    return res    
+    checksum = (checksum>>16) + (checksum&0xFFFF)
+    checksum = (~checksum)&0xFFFF
+    return checksum
     pass
 
 def checksum_receiver(data, checksum): # Verifying if the checksum is correct or not
+    data_len = len(data)
+    if data_len%2 != 0:
+        data_len += 1
+        data += b'\0'
+        
+    for i in range(0,data_len,2):
+        w = (data[i] << 8) + data[i+1]
+        checksum += w
     
-    check=1
-    if check==1:
+    checksum = (checksum>>16) + (checksum&0xFFFF)
+    if checksum==0xFFFF:
         return 1
     else:
         return 0
 
 def parse(datagram): # Splitting the datagram into it's constituent parts
     packet = {}
-    packet['src_port'],packet['dst_port'],packet['seq'],packet['ack'],packet['wsize'],packet['proto'],packet['checksum'] = struct.unpack('!HHIIHHH', datagram[:18])
-    packet['data'] = struct.unpack('!%ds'%(len(datagram)-18), datagram[18:len(datagram)])
+    packet['src_port'],packet['dst_port'],packet['src_host'],packet['dst_host'],packet['seq'],packet['ack'],packet['wsize'],packet['checksum'] = struct.unpack('!HH4s4sIIHH', datagram[:24])
+    packet['data'] = struct.unpack('!%ds'%(len(datagram)-24), datagram[24:])
     return packet
     pass
 
@@ -45,39 +58,23 @@ class UDPPacket:  # Creation of a UDP packet to be sent
     
     def build(self):
         packet = struct.pack(
-            '!HHIIHHH', # Size H->2, I->4
-            self.src_port, # Sorce port number        0
-            self.dst_port, # Destination port number  2 
-            0,             # Sequence number          4 
-            0,             # Acknoledgement number    8 
-            8192,          # Window Size              12
-            17,            # Protocol -> UDP datagram 14
-            0              # Initial Checksum value   16
+            '!HH4s4sIIHH', # Size H->2, I->4, 4s->4
+            self.src_port,                    # Sorce port number         0
+            self.dst_port,                    # Destination port number   2
+            socket.inet_aton(self.src_host),  # Source IPv4 address       4
+            socket.inet_aton(self.dst_host),  #  Destination IPv4 address 8
+            0,                                # Sequence number           12 
+            0,                                # Acknoledgement number     16 
+            8192,                             # Window Size               20
+            0                                 # Initial Checksum value    22
         )
         p1 = packet+self.data # Initializing packet along with data for checksum
-        pseudo = struct.pack(
-            '!4s4sHH',
-            socket.inet_aton(self.src_host),
-            socket.inet_aton(self.dst_host),
-            socket.IPPROTO_UDP,
-            len(p1)
-        )
+        # print(p1)
+        # print(self.data)
         
-        checksum = checksum_func(pseudo+p1)
-        packet = packet[:16] + struct.pack('H',checksum) + self.data # Final packet to be transmitted
+        checksum = checksum_func(p1)
+        # print(checksum)
+        packet = packet[:22] + struct.pack('!H',checksum) + self.data # Final packet to be transmitted
         
         return packet
         pass
-    
-# class Seq_ACK: # updation of sequence and acknoledgement numbers
-#     def __init__(self, seq, ack):
-#         self.seq = seq
-#         self.ack = ack
-        
-#     def update_seq(self):
-        
-#         pass
-    
-#     def update_ack(self):
-        
-#         pass
