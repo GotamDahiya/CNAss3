@@ -1,3 +1,7 @@
+'''
+This file encrypts the messages between the server and the client. A common number is chosen as the seed which shuffles the entire ASCII range by generating a random seed number. This common number is like the public key for the toy application. If the numbers entered are different then a erroneous message will be displayed.
+'''
+
 import random
 import sys
 import io
