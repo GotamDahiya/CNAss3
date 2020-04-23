@@ -1,12 +1,18 @@
 '''
-This file creates the raw packets to be transmitted via the UDP connection. It includes a checksum generator and verifier, packet builder. A method for updating sequence and acknoledgement numbers is also included in this file. A check function for the SEQ and ACK numbers is also included.
+This file creates the raw packets to be transmitted via the UDP connection. It includes a checksum generator and verifier, packet builder.
 '''
 
 import array
 import struct
 import socket
 
-check = 0
+def check_seq():
+    
+    pass
+
+def check_ack():
+    
+    pass
 
 def checksum_func(packet): # Creating a checksum for the data
     checksum = 0
@@ -47,24 +53,6 @@ def parse(datagram): # Splitting the datagram into it's constituent parts
     return packet
     pass
 
-
-def check_SeqAck(seq: int,
-                 ack: int): # Checking if the sequence and acknoledgement numbers are in sequence
-    global check
-    print(seq, end=' ')
-    print(ack, end=' ')
-    print(check)
-    if (seq+ack)==(check):
-        return 1
-    else:
-        return 0
-    pass
-
-def update_check():
-    print("A")
-    global check
-    check += 1
-    print(check)
 
 class UDPPacket:  # Creation of a UDP packet to be sent
     def __init__(self,
