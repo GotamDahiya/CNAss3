@@ -5,8 +5,6 @@ Port -> 8080
 '''
 
 import socket
-import io
-import random
 import sys
 import struct
 from encryption import *
@@ -36,14 +34,13 @@ if __name__ == '__main__':
 		data = msgFromClient.encode()
 		bytesToSend = UDPPacket(localIP,serverAddrPort[0],localPort,serverAddrPort[1],seq,ack,data).build()
 		clientSocket.sendto(bytesToSend, serverAddrPort)
-  
-		update_check()
 		
+
 		datagram,ip_addr = clientSocket.recvfrom(bufferSize)
 		packet = parse(datagram)
 		# print(packet)
 		datagram1 = datagram[:22] + datagram[24:]
-		if(checksum_receiver(datagram1, packet['checksum']) and check_SeqAck(packet['seq'],packet['ack'])):
+		if(checksum_receiver(datagram1, packet['checksum'])):
 			
 			msgFromServer, = packet['data']
 			msgFromServer = msgFromServer.decode()
@@ -52,7 +49,9 @@ if __name__ == '__main__':
 			print(msgFromServer)
 			print("Server's IP address:")
 			print(ip_addr)
-			ack += 1
+			ack = packet['ack']+len(datagram[24:])+1
 			seq = packet['seq']
+			print(seq,end=' ')
+			print(ack)
 		else:
-			print("Error! Package discarded")
+			print("Error! Resend last message in full.")
