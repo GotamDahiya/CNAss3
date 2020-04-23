@@ -5,8 +5,6 @@ Port -> 8989
 '''
 
 import socket
-import io
-import random
 import sys
 import struct
 from encryption import *
@@ -34,7 +32,7 @@ if __name__ == '__main__':
         packet = parse(datagram)
         # print(packet)
         datagram1 = datagram[:22] + datagram[24:]
-        if(checksum_receiver(datagram1, packet['checksum']) and check_SeqAck(packet['seq'],packet['ack'])):
+        if(checksum_receiver(datagram1, packet['checksum'])):
             
             msgFromClient, = packet['data']
             msgFromClient = msgFromClient.decode()
@@ -43,10 +41,12 @@ if __name__ == '__main__':
             print(ip_addr)
             print("Message from client:")
             print(msgFromClient)
-            seq += 1
+            seq = packet['seq'] + len(datagram[24:])+1 
             ack = packet['ack']
+            print(seq,end=' ')
+            print(ack)
         else:
-            print("Error! Packet Discarded")
+            print("Error! Resend last message in full.")
             
             
         msgFromServer = input("Enter a message-> ")
@@ -54,5 +54,3 @@ if __name__ == '__main__':
         data = msgFromServer.encode()
         bytesToSend = UDPPacket(localIP,ip_addr[0],localPort,ip_addr[1],seq,ack,data).build()
         serverSocket.sendto(bytesToSend,ip_addr)
-
-        update_check()
