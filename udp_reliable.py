@@ -6,13 +6,6 @@ import array
 import struct
 import socket
 
-def check_seq():
-    
-    pass
-
-def check_ack():
-    
-    pass
 
 def checksum_func(packet): # Creating a checksum for the data
     checksum = 0
