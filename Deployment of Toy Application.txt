@@ -1,0 +1,44 @@
+﻿Deployment of Toy Application
+Gotam Dahiya
+2017A7PS0223H
+
+
+Hariharan R
+2017A7PS0065H
+
+
+Srikruthi
+2017A7PS0086H
+
+
+Arun Parimi
+2017A7PS0221H
+
+
+Sricharan
+2017A7PSyyyyH
+
+
+Installation:
+        To install the toy application the GitHub repository has to be cloned onto the local machines which will be communicating with each other. Any two machines can communicate with each other if they are connected over the same network. The IP address for the server and client will have to be changed in their respective files before communication with each other.
+
+
+ git clone https://github.com/GotamDahiya/CNAss3.git 
+
+
+
+
+Deployment:
+
+
+1. Navigate to the cloned repository.
+2. Run the server file first on either local machine and then the client on the other local machine.
+3. Enter the seed number when asked for the input at the start of the program.
+4. Send a message from client to server to initiate communication. Since it sends and receives only from one client at a time it is advised only one client be connected to the server in a certain period of time.
+5. To end communication, send a “FIN” message either from the server to the client. If the client sends it then both server and client will shut down. If the server sends it then only the client shuts down.
+
+
+
+
+GitHub Repository:   
+https://github.com/GotamDahiya/CNAss3
