@@ -9,7 +9,7 @@ import sys
 import struct
 from encryption import *
 from udp_reliable import *
-
+from buffer import *
 
 if __name__ == '__main__':
 	serverAddrPort = ("127.0.0.1",8989)
@@ -19,7 +19,7 @@ if __name__ == '__main__':
 	localPort = 8080
 
 	print("Client and server should have the same seed number(Public key)")
-	r_seed=input("Enter number for seed function(Public key)-> ")
+	r_seed=int(input("Enter number for seed function(Public key)-> "))
 
 	# Creating server side UDP socket
 	clientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -33,6 +33,7 @@ if __name__ == '__main__':
 		msgFromClient = Encryption(msgFromClient,r_seed).encrypt()
 		data = msgFromClient.encode()
 		bytesToSend = UDPPacket(localIP,serverAddrPort[0],localPort,serverAddrPort[1],seq,ack,data).build()
+		add(seq, ack, bytesToSend)
 		clientSocket.sendto(bytesToSend, serverAddrPort)
 		
 
@@ -40,18 +41,28 @@ if __name__ == '__main__':
 		packet = parse(datagram)
 		# print(packet)
 		datagram1 = datagram[:22] + datagram[24:]
-		if(checksum_receiver(datagram1, packet['checksum'])):
+		if(checksum_receiver(datagram1, packet['checksum']) and (packet['ack']-ack)<=1):
 			
 			msgFromServer, = packet['data']
 			msgFromServer = msgFromServer.decode()
 			msgFromServer = Encryption(msgFromServer,r_seed).decrypt()
-			print("Message from server:")
+			print("Message from server: ",end=' ')
 			print(msgFromServer)
-			print("Server's IP address:")
+			print("Server's IP address:",end=' ')
 			print(ip_addr)
-			ack = packet['ack']+len(datagram[24:])+1
+			ack = packet['ack'] + 1
 			seq = packet['seq']
-			print(seq,end=' ')
-			print(ack)
 		else:
-			print("Error! Resend last message in full.")
+			
+			print("Error! Either checksum is wrong or packet is not in sequence. Resend last message in full.")
+			packet = render(seq, ack)
+			msg, = Encryption(msg,r_seed).decrypt()
+			print("Message from server: ",end=' ')
+			print(msg)
+			print("Server's IP address: ",end=' ')
+			print(ip_addr)
+   
+   
+		msg, = packet['data']
+		if(msg == b'\x17[)'):
+			sys.exit()
