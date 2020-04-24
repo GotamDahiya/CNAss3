@@ -9,6 +9,7 @@ import sys
 import struct
 from encryption import *
 from udp_reliable import *
+from buffer import *
 
 if __name__ == '__main__':
     localIP = "127.0.0.1"
@@ -16,7 +17,7 @@ if __name__ == '__main__':
     buffersize = 1024
 
     print("Server and client should have same seed number(Public Key)")
-    r_seed = input("Enter number for seed function(Public key)-> ")
+    r_seed = int(input("Enter number for seed function(Public key)-> "))
 
     # Creating server side UDP socket
     serverSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -32,7 +33,7 @@ if __name__ == '__main__':
         packet = parse(datagram)
         # print(packet)
         datagram1 = datagram[:22] + datagram[24:]
-        if(checksum_receiver(datagram1, packet['checksum'])):
+        if(checksum_receiver(datagram1, packet['checksum']) and (packet['seq']-seq)<=1):
             
             msgFromClient, = packet['data']
             msgFromClient = msgFromClient.decode()
@@ -41,16 +42,30 @@ if __name__ == '__main__':
             print(ip_addr)
             print("Message from client:")
             print(msgFromClient)
-            seq = packet['seq'] + len(datagram[24:])+1 
+            seq = packet['seq'] + 1 
             ack = packet['ack']
-            print(seq,end=' ')
-            print(ack)
         else:
-            print("Error! Resend last message in full.")
+            
+            print("Error! Either checksum is wrong or packet is not in sequence. Obtaining message from container.")
+            packet = render(seq, ack)
+            msg, = packet['data']
+            msg = Encryption(msg,r_seed).decrypt()
+            print("Client's IP address: ",end=' ')
+            print(ip_addr)
+            print("Message from client: ",end=' ')
+            print(msg)
             
             
+        msg, = packet['data']
+        if(msg==b'\x17[)'):
+            data = b'\x17[)'
+            finalBytes = UDPPacket(localIP,ip_addr[0],localPort,ip_addr[1],seq,ack,data).build()
+            serverSocket.sendto(finalBytes,ip_addr)
+            sys.exit()
+                    
         msgFromServer = input("Enter a message-> ")
         msgFromServer = Encryption(msgFromServer,r_seed).encrypt()
         data = msgFromServer.encode()
         bytesToSend = UDPPacket(localIP,ip_addr[0],localPort,ip_addr[1],seq,ack,data).build()
+        add(seq, ack, bytesToSend)
         serverSocket.sendto(bytesToSend,ip_addr)
