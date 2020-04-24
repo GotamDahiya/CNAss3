@@ -32,7 +32,7 @@ Install these software for a smooth run
 ### Installing
 
 First git clone the repository on local machine
-```git clone https://github.com/GotamDahiya/CNAss3```
+```git clone https://github.com/GotamDahiya/CNAss3.git```
 
 ## Deployment
 
