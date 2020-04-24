@@ -14,7 +14,7 @@ This project contains 4 files, namely:- *server*,*client*,*udp_reilabe*,*buffer*
 
 Both the client and server pass messages between each other similar to an ELIZA program. The messages are stored in packets and transmitted via UDP sockets implemented in both the programs.
 
-*udp_reliable*-> This file creates a packet containing the source IPv4 address, port, destination IPv4 address, port, sequences number, acknoledgement number, window size,checksum value and data to be transmitted. For error checking "checksum" function is used. Sequence and acknlodgement numbers are updated with a protocol similar to*RTP(Real Time Protocol)*. The sequence and acknoledgement numbers are updated at the server and client side respectively.
+*udp_reliable*-> This file creates a packet containing the source IPv4 address, port, destination IPv4 address, port, sequences number, acknoledgement number, window size,checksum value and data to be transmitted. For error checking "checksum" function is used. Sequence and acknlodgement numbers are updated with a protocol similar to *RTP(Real Time Protocol)*. The sequence and acknoledgement numbers are updated at the server and client side respectively.
 
 *Buffer*-> This file stores 20 recent messages passed between server and client. Whenever a bad packet is received the respective packet is rendered at the receiver side.
 
@@ -37,7 +37,7 @@ First git clone the repository on local machine
 ## Deployment
 
 * **Navigate to the cloned repository.**
-* **Run the server file first and then the client script in seperate terminals/command prompts.**
+* **Run the server file first and then the client script in seperate terminals/command prompts/local machines.**
 * **Send a message from client to server to initiate communication.**
 * **Send messages back and forth between both the programs.**
 * **To end communication send the message "FIN" from either client or server. If from server then client only client file shuts down. If from client then both server and client files shut down.**
